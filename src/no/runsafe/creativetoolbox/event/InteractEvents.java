@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEntityEvent, IConfigurationChanged, IAsyncEvent
@@ -150,16 +151,16 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 
 	private void listPlotMembers(IPlayer player, String regionName)
 	{
-		Set<String> owners = worldGuardInterface.getOwners(manager.getWorld(), regionName);
-		for (String owner : owners)
+		Set<UUID> owners = worldGuardInterface.getOwnerUniqueIds(manager.getWorld(), regionName);
+		for (UUID owner : owners)
 			listPlotMember(player, "&2Owner&r", owner, true);
 
-		Set<String> members = worldGuardInterface.getMembers(manager.getWorld(), regionName);
-		for (String member : members)
+		Set<UUID> members = worldGuardInterface.getMemberUniqueIds(manager.getWorld(), regionName);
+		for (UUID member : members)
 			listPlotMember(player, "&3Member&r", member, false);
 	}
 
-	private void listPlotMember(IPlayer player, String label, String member, boolean showSeen)
+	private void listPlotMember(IPlayer player, String label, UUID member, boolean showSeen)
 	{
 		IPlayer plotMember = server.getPlayer(member);
 		if (plotMember != null)
