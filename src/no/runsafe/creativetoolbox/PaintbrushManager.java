@@ -11,7 +11,8 @@ import no.runsafe.framework.minecraft.event.player.RunsafePlayerClickEvent;
 import no.runsafe.framework.minecraft.item.meta.RunsafeMeta;
 import no.runsafe.worldguardbridge.IRegionControl;
 
-import java.util.HashMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRightClickBlock, IConfigurationChanged
@@ -62,13 +63,13 @@ public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRig
 
 	private Item getPaintbrushBlock(IPlayer player)
 	{
-		String playerName = player.getName();
-		return paintbrushes.containsKey(playerName) ? paintbrushes.get(playerName) : Item.Unavailable.Air;
+		UUID playerUUID = player.getUniqueId();
+		return paintbrushes.containsKey(playerUUID) ? paintbrushes.get(playerUUID) : Item.Unavailable.Air;
 	}
 
 	public void setPaintbrushBlock(IPlayer player, Item setItem)
 	{
-		paintbrushes.put(player.getName(), setItem);
+		paintbrushes.put(player.getUniqueId(), setItem);
 		player.sendColouredMessage("&ePaintbrush block changed: " + setItem.getName() + " [" + setItem.getData() + "]");
 	}
 
@@ -78,8 +79,8 @@ public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRig
 		creativeWorldName = configuration.getConfigValueAsString("world");
 	}
 
-	/* Stores paintbrush data. String: player username. Item: block to paint with. */
-	private final HashMap<String, Item> paintbrushes = new HashMap<String, Item>(0);
+	/* Stores paintbrush data. String: playerUUID. Item: block to paint with. */
+	private final ConcurrentHashMap<UUID, Item> paintbrushes = new ConcurrentHashMap<UUID, Item>(0);
 	private final IRegionControl regionControl;
 	private String creativeWorldName;
 }
