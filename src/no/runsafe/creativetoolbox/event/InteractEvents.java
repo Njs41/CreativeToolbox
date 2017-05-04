@@ -44,10 +44,10 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	{
 		if (manager.isInWrongWorld(player))
 			return true;
-		if (extensions.containsKey(player.getName()))
+		if (extensions.containsKey(player.getUniqueId()))
 		{
-			String target = extensions.get(player.getName());
-			extensions.remove(player.getName());
+			String target = extensions.get(player.getUniqueId());
+			extensions.remove(player.getUniqueId());
 			manager.extendPlot(player, target, block.getLocation());
 			return false;
 		}
@@ -83,7 +83,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 
 	public void startPlotExtension(IPlayer player, String plot)
 	{
-		extensions.put(player.getName(), plot);
+		extensions.put(player.getUniqueId(), plot);
 	}
 
 	private void listPlotsByPlayer(IPlayer checkPlayer, IPlayer triggerPlayer)
@@ -182,6 +182,6 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	private final PlotTagRepository tagRepository;
 	private final PlotLogRepository logRepository;
 	private final IServer server;
-	/* Keeps track of players in the middle of extending a plot. String: Player username. String: Plot name. */
-	private final ConcurrentHashMap<String, String> extensions = new ConcurrentHashMap<String, String>();
+	/* Keeps track of players in the middle of extending a plot. UUID: PlayerUUID. String: Plot name. */
+	private final ConcurrentHashMap<UUID, String> extensions = new ConcurrentHashMap<UUID, String>();
 }
