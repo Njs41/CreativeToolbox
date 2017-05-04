@@ -72,5 +72,6 @@ public class PlotMemberBlacklistRepository extends Repository implements IConfig
 		return update;
 	}
 
+	/* Stores players blacklisted from created. String: player username */
 	private final List<String> blacklist = new ArrayList<String>();
 }

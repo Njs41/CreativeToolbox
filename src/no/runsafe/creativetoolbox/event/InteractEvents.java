@@ -182,5 +182,6 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	private final PlotTagRepository tagRepository;
 	private final PlotLogRepository logRepository;
 	private final IServer server;
+	/* Keeps track of players in the middle of extending a plot. String: Player username. String: Plot name. */
 	private final ConcurrentHashMap<String, String> extensions = new ConcurrentHashMap<String, String>();
 }

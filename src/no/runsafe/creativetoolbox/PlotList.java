@@ -84,6 +84,8 @@ public class PlotList
 		return null;
 	}
 
+	/* Points to a plot. String: Player username. String:A plot.*/
 	private final ConcurrentHashMap<String, String> pointer = new ConcurrentHashMap<String, String>();
+	/* List of a player's plots. String: Player username. List<String>: list of plotnames. */
 	private final ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<String, List<String>>();
 }

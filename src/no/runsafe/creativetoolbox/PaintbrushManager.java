@@ -78,6 +78,7 @@ public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRig
 		creativeWorldName = configuration.getConfigValueAsString("world");
 	}
 
+	/* Stores paintbrush data. String: player username. Item: block to paint with. */
 	private final HashMap<String, Item> paintbrushes = new HashMap<String, Item>(0);
 	private final IRegionControl regionControl;
 	private String creativeWorldName;

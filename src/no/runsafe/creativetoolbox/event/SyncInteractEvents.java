@@ -147,8 +147,11 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 		return nothing;
 	}
 
+	/* Keeps track of players in the middle of deleting a plot. String: player username. Rectangle2D: plot */
 	private final ConcurrentHashMap<String, Map<String, Rectangle2D>> deletions = new ConcurrentHashMap<String, Map<String, Rectangle2D>>();
+	/* Keeps track of players in the middle of regenerating plots. String: player username. Rectangle2D: plot */
 	private final ConcurrentHashMap<String, Rectangle2D> regenerations = new ConcurrentHashMap<String, Rectangle2D>();
+	/* Keeps track of players in the middle of regenerating plots. String: player username. Mode: reset type. */
 	private final ConcurrentHashMap<String, PlotChunkGenerator.Mode> generator = new ConcurrentHashMap<String, PlotChunkGenerator.Mode>();
 	private final IPlotGenerator plotGenerator;
 	private final PlotCalculator calculator;

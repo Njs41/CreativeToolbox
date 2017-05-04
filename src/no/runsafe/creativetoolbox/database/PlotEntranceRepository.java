@@ -104,6 +104,7 @@ public class PlotEntranceRepository extends Repository implements IConfiguration
 		return update;
 	}
 
+	/* Stores plot entrances. String: plot name. PlotEntrance: Entrance for a plot. */
 	private final HashMap<String, PlotEntrance> cache = new HashMap<String, PlotEntrance>();
 	private IWorld world;
 }

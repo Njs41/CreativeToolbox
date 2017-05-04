@@ -533,14 +533,20 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 	private final IDebug debugger;
 	private final IServer server;
 	private final PlotLogRepository plotLog;
+	/* String: Player username. Duration: Time since they last logged in. */
 	private final HashMap<String, Duration> lastSeen = new HashMap<String, Duration>();
+	/* Long: A single column of plots. ArrayList<Long>: an entire row of plots. */
 	private final HashMap<Long, ArrayList<Long>> takenPlots = new HashMap<Long, ArrayList<Long>>();
+	/* Stores the location of free plots. ILocation: The plot entrance of a free plot. */
 	private final ArrayList<ILocation> freePlots = new ArrayList<ILocation>();
+	/* Stores players who can't vote for a particular plot. String: Plot name. List<String>: Player names. */
 	private final Map<String, List<String>> voteBlacklist = new HashMap<String, List<String>>();
 	private IWorld world;
+	/* List of regions to be ignored. String: region names. */
 	private List<String> ignoredRegions;
 	private Duration limit;
 	private int autoApprove;
+	/* Stores info relating to how much a rank's vote is worth. String: Rank name. Integer: Vote value. */
 	private Map<String, Integer> voteRanks;
 	private final DateTimeFormatter dateFormat = DateTimeFormat.forPattern("dd.MM.YYYY");
 }
