@@ -284,7 +284,7 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 			PlotApproval approval = plotApproval.get(plotName);
 			if (approval != null)
 				plotApproval.delete(approval);
-			if (!plotLog.log(plotName, claimer.getName()))
+			if (!plotLog.log(plotName, claimer))
 				console.logWarning("Unable to log plot %s claimed by %s", plotName, claimer.getPrettyName());
 			setTaken(calculator.getColumn((long) region.getCenterX()), calculator.getRow((long) region.getCenterY()));
 			PlotEntrance entrance = new PlotEntrance();

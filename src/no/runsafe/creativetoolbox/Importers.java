@@ -62,7 +62,7 @@ public class Importers implements IConfigurationChanged, IServerReady
 		{
 			String claim = logRepository.getClaim(region);
 			if (claim == null)
-				if (!logRepository.log(region, "unknown"))
+				if (!logRepository.unknownPlayerLog(region))
 					console.logWarning("Unable to import region &c%s&r to claim repository!", region);
 
 			for (String member : worldGuard.getMembers(world, region))

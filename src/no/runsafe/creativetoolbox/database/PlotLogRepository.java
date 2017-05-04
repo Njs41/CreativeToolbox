@@ -8,11 +8,19 @@ import java.util.List;
 public class PlotLogRepository extends Repository
 {
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public boolean log(String plot, String claimer)
+	public boolean log(String plot, IPlayer claimer)
 	{
 		return database.execute("INSERT INTO `creative_plot_log` (`plot`,`claimer`,`claimed`) VALUES (?, ?, NOW())" +
 			"ON DUPLICATE KEY UPDATE `claimer`=VALUES(`claimer`), `claimed`=VALUES(`claimed`)",
-			plot, claimer);
+			plot, claimer.getName());
+	}
+
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	public boolean unknownPlayerLog(String plot)
+	{
+		return database.execute("INSERT INTO `creative_plot_log` (`plot`,`claimer`,`claimed`) VALUES (?, ?, NOW())" +
+						"ON DUPLICATE KEY UPDATE `claimer`=VALUES(`claimer`), `claimed`=VALUES(`claimed`)",
+				plot, "unknown");
 	}
 
 	public void delete(String plot)
