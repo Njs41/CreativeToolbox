@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SyncInteractEvents implements IPlayerRightClickBlock
@@ -36,17 +37,17 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 
 	public void startRegeneration(IPlayer executor, Rectangle2D area, PlotChunkGenerator.Mode mode)
 	{
-		regenerations.put(executor.getName(), area);
+		regenerations.put(executor.getUniqueId(), area);
 
 		if (mode != null)
-			generator.put(executor.getName(), mode);
-		else if (generator.containsKey(executor.getName()))
-			generator.remove(executor.getName());
+			generator.put(executor.getUniqueId(), mode);
+		else if (generator.containsKey(executor.getUniqueId()))
+			generator.remove(executor.getUniqueId());
 	}
 
 	public void startDeletion(IPlayer executor, Map<String, Rectangle2D> regions)
 	{
-		deletions.put(executor.getName(), regions);
+		deletions.put(executor.getUniqueId(), regions);
 	}
 
 	@Override
@@ -59,24 +60,24 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 
 	private boolean executeRegenerations(IPlayer player, ILocation location)
 	{
-		if (regenerations.containsKey(player.getName()))
+		if (regenerations.containsKey(player.getUniqueId()))
 		{
-			boolean changeMode = generator.containsKey(player.getName())
-				&& generator.get(player.getName()) != PlotChunkGenerator.Mode.NORMAL;
+			boolean changeMode = generator.containsKey(player.getUniqueId())
+				&& generator.get(player.getUniqueId()) != PlotChunkGenerator.Mode.NORMAL;
 			try
 			{
-				String playerName = player.getName();
-				Rectangle2D area = regenerations.get(playerName);
+				UUID playerUUID = player.getUniqueId();
+				Rectangle2D area = regenerations.get(playerUUID);
 				if (!area.contains(location.getX(), location.getZ()))
 				{
-					regenerations.remove(playerName);
+					regenerations.remove(playerUUID);
 					if (changeMode)
-						generator.remove(playerName);
+						generator.remove(playerUUID);
 					return true;
 				}
 				if (changeMode)
 				{
-					PlotChunkGenerator.Mode mode = generator.get(playerName);
+					PlotChunkGenerator.Mode mode = generator.get(playerUUID);
 					plotGenerator.setMode(mode);
 				}
 
@@ -97,9 +98,9 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 				if (changeMode)
 				{
 					plotGenerator.setMode(PlotChunkGenerator.Mode.NORMAL);
-					generator.remove(player.getName());
+					generator.remove(player.getUniqueId());
 				}
-				regenerations.remove(player.getName());
+				regenerations.remove(player.getUniqueId());
 			}
 		}
 		return true;
@@ -121,11 +122,11 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 	private boolean executeDeletion(IPlayer player, ILocation location)
 	{
 		boolean nothing = true;
-		if (deletions.containsKey(player.getName()))
+		if (deletions.containsKey(player.getUniqueId()))
 		{
 			StringBuilder results = new StringBuilder();
-			Map<String, Rectangle2D> process = deletions.get(player.getName());
-			deletions.remove(player.getName());
+			Map<String, Rectangle2D> process = deletions.get(player.getUniqueId());
+			deletions.remove(player.getUniqueId());
 			for (String region : process.keySet())
 			{
 				Rectangle2D area = process.get(region);
@@ -147,12 +148,12 @@ public class SyncInteractEvents implements IPlayerRightClickBlock
 		return nothing;
 	}
 
-	/* Keeps track of players in the middle of deleting a plot. String: player username. Rectangle2D: plot */
-	private final ConcurrentHashMap<String, Map<String, Rectangle2D>> deletions = new ConcurrentHashMap<String, Map<String, Rectangle2D>>();
-	/* Keeps track of players in the middle of regenerating plots. String: player username. Rectangle2D: plot */
-	private final ConcurrentHashMap<String, Rectangle2D> regenerations = new ConcurrentHashMap<String, Rectangle2D>();
-	/* Keeps track of players in the middle of regenerating plots. String: player username. Mode: reset type. */
-	private final ConcurrentHashMap<String, PlotChunkGenerator.Mode> generator = new ConcurrentHashMap<String, PlotChunkGenerator.Mode>();
+	/* Keeps track of players in the middle of deleting a plot. String: playerUUID. Map: plots */
+	private final ConcurrentHashMap<UUID, Map<String, Rectangle2D>> deletions = new ConcurrentHashMap<UUID, Map<String, Rectangle2D>>();
+	/* Keeps track of players in the middle of regenerating plots. String: playerUUID. Rectangle2D: plot */
+	private final ConcurrentHashMap<UUID, Rectangle2D> regenerations = new ConcurrentHashMap<UUID, Rectangle2D>();
+	/* Keeps track of players in the middle of regenerating plots. String: playerUUID. Mode: reset type. */
+	private final ConcurrentHashMap<UUID, PlotChunkGenerator.Mode> generator = new ConcurrentHashMap<UUID, PlotChunkGenerator.Mode>();
 	private final IPlotGenerator plotGenerator;
 	private final PlotCalculator calculator;
 	private final WorldEditInterface worldEdit;
