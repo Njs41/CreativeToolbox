@@ -12,6 +12,7 @@ import no.runsafe.framework.api.event.IAsyncEvent;
 import no.runsafe.framework.api.event.player.IPlayerInteractEntityEvent;
 import no.runsafe.framework.api.event.player.IPlayerRightClickBlock;
 import no.runsafe.framework.api.event.plugin.IConfigurationChanged;
+import no.runsafe.framework.api.log.IConsole;
 import no.runsafe.framework.api.player.IPlayer;
 import no.runsafe.framework.minecraft.event.player.RunsafePlayerInteractEntityEvent;
 import no.runsafe.framework.minecraft.item.meta.RunsafeMeta;
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEntityEvent, IConfigurationChanged, IAsyncEvent
 {
 	public InteractEvents(
+		IConsole console,
 		PlotFilter plotFilter,
 		IRegionControl worldGuard,
 		PlotManager manager,
@@ -37,6 +39,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 		this.tagRepository = tagRepository;
 		this.logRepository = logRepository;
 		this.server = server;
+		this.console = console;
 	}
 
 	@Override
@@ -163,7 +166,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	private void listPlotMember(IPlayer player, String label, UUID member, boolean showSeen)
 	{
 		IPlayer plotMember = server.getPlayer(member);
-		if (plotMember != null)
+		if (plotMember != null && plotMember.getName() != null)
 		{
 			player.sendColouredMessage("   %s: %s", label, plotMember.getPrettyName());
 
@@ -173,6 +176,8 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 				player.sendColouredMessage("     %s&r", (seen == null ? "Player never seen" : seen));
 			}
 		}
+		else
+			console.logWarning("Player %s not found when displaying members.", member.toString());
 	}
 
 	private final IRegionControl worldGuardInterface;
@@ -182,6 +187,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	private final PlotTagRepository tagRepository;
 	private final PlotLogRepository logRepository;
 	private final IServer server;
+	private final IConsole console;
 	/* Keeps track of players in the middle of extending a plot. UUID: PlayerUUID. String: Plot name. */
 	private final ConcurrentHashMap<UUID, String> extensions = new ConcurrentHashMap<UUID, String>();
 }
