@@ -15,16 +15,6 @@ public class PlotMemberRepository extends Repository
 		return "creative_plot_member";
 	}
 
-	@Deprecated
-	public void addMember(String plot, String player, boolean isOwner)
-	{
-		database.execute(
-			"INSERT INTO creative_plot_member (`plot`,`player`,`owner`) VALUES (?,?,?)" +
-				"ON DUPLICATE KEY UPDATE owner=VALUES(owner)",
-			plot, player, isOwner ? 1 : 0
-		);
-	}
-
 	public void addMember(String plot, IPlayer player, boolean isOwner)
 	{
 		database.execute(
