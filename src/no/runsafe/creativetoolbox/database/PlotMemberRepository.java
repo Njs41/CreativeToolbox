@@ -24,12 +24,6 @@ public class PlotMemberRepository extends Repository
 		);
 	}
 
-	@Deprecated
-	public void removeMember(String region, String member)
-	{
-		database.execute("DELETE FROM creative_plot_member WHERE `plot`=? AND `player`=?", region, member);
-	}
-
 	public void removeMember(String region, IPlayer member)
 	{
 		database.execute("DELETE FROM creative_plot_member WHERE `plot`=? AND `player`=?", region, member.getName().toLowerCase());
