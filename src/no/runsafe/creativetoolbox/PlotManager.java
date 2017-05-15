@@ -200,7 +200,7 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 	public boolean disallowVote(IPlayer player, String region)
 	{
 		return !world.equals(player.getWorld())
-			|| (voteBlacklist.containsKey(region) && voteBlacklist.get(region).contains(player.getName().toLowerCase()))
+			|| (voteBlacklist.containsKey(region) && voteBlacklist.get(region).contains(player.getUniqueId()))
 			|| worldGuard.getOwners(world, region).contains(player.getName().toLowerCase())
 			|| worldGuard.getMembers(world, region).contains(player.getName().toLowerCase());
 	}
@@ -417,8 +417,8 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 	public void memberRemoved(String plot, IPlayer player)
 	{
 		if (!voteBlacklist.containsKey(plot))
-			voteBlacklist.put(plot, new ArrayList<String>());
-		voteBlacklist.get(plot).add(player.getName().toLowerCase());
+			voteBlacklist.put(plot, new ArrayList<UUID>());
+		voteBlacklist.get(plot).add(player.getUniqueId());
 	}
 
 	private void CleanStaleData()
@@ -539,8 +539,8 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 	private final HashMap<Long, ArrayList<Long>> takenPlots = new HashMap<Long, ArrayList<Long>>();
 	/* Stores the location of free plots. ILocation: The plot entrance of a free plot. */
 	private final ArrayList<ILocation> freePlots = new ArrayList<ILocation>();
-	/* Stores players who can't vote for a particular plot. String: Plot name. List<String>: Player names. */
-	private final Map<String, List<String>> voteBlacklist = new HashMap<String, List<String>>();
+	/* Stores players who can't vote for a particular plot. String: Plot name. List<UUID>: Player IDs. */
+	private final Map<String, List<UUID>> voteBlacklist = new HashMap<String, List<UUID>>();
 	private IWorld world;
 	/* List of regions to be ignored. String: region names. */
 	private List<String> ignoredRegions;
