@@ -13,6 +13,7 @@ import no.runsafe.worldguardbridge.IRegionControl;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRightClickBlock, IConfigurationChanged
 {
@@ -62,13 +63,13 @@ public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRig
 
 	private Item getPaintbrushBlock(IPlayer player)
 	{
-		String playerName = player.getName();
-		return paintbrushes.containsKey(playerName) ? paintbrushes.get(playerName) : Item.Unavailable.Air;
+		UUID playerID = player.getUniqueId();
+		return paintbrushes.containsKey(playerID) ? paintbrushes.get(playerID) : Item.Unavailable.Air;
 	}
 
 	public void setPaintbrushBlock(IPlayer player, Item setItem)
 	{
-		paintbrushes.put(player.getName(), setItem);
+		paintbrushes.put(player.getUniqueId(), setItem);
 		player.sendColouredMessage("&ePaintbrush block changed: " + setItem.getName() + " [" + setItem.getData() + "]");
 	}
 
@@ -78,7 +79,7 @@ public class PaintbrushManager implements IPlayerLeftClickBlockEvent, IPlayerRig
 		creativeWorldName = configuration.getConfigValueAsString("world");
 	}
 
-	private final HashMap<String, Item> paintbrushes = new HashMap<String, Item>(0);
+	private final HashMap<UUID, Item> paintbrushes = new HashMap<UUID, Item>(0);
 	private final IRegionControl regionControl;
 	private String creativeWorldName;
 }
