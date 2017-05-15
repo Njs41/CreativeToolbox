@@ -162,7 +162,7 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 		Duration result = null;
 		for (IPlayer owner : owners)
 		{
-			Duration ownerSeen = getSeen(owner.getName());
+			Duration ownerSeen = getSeen(owner);
 			if (ownerSeen == null)
 				return null;
 			if (ownerSeen.isEqual(Duration.ZERO))
@@ -173,15 +173,15 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 		return result;
 	}
 
-	private Duration getSeen(String playerName)
+	private Duration getSeen(IPlayer player)
 	{
-		playerName = playerName.toLowerCase();
+		if (player == null)
+			return null;
+
+		String playerName = player.getName().toLowerCase();
 		if (lastSeen.containsKey(playerName))
 			return lastSeen.get(playerName);
 
-		IPlayer player = server.getPlayer(playerName);
-		if (player == null)
-			return null;
 		if (player.isOnline())
 			lastSeen.put(playerName, Duration.ZERO);
 		else if (!player.isNotBanned())
@@ -414,11 +414,11 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 		}
 	}
 
-	public void memberRemoved(String plot, String name)
+	public void memberRemoved(String plot, IPlayer player)
 	{
 		if (!voteBlacklist.containsKey(plot))
 			voteBlacklist.put(plot, new ArrayList<String>());
-		voteBlacklist.get(plot).add(name.toLowerCase());
+		voteBlacklist.get(plot).add(player.getName().toLowerCase());
 	}
 
 	private void CleanStaleData()
