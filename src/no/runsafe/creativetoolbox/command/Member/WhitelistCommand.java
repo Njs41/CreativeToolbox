@@ -20,7 +20,7 @@ public class WhitelistCommand extends ExecutableCommand
 	{
 		IPlayer player = params.getValue("player");
 		if (player == null)
-			return null;
+			return "&cUnable to locate player.";
 
 		if (!blacklistRepository.isBlacklisted(player))
 			return "&cThat player is not blacklisted.";

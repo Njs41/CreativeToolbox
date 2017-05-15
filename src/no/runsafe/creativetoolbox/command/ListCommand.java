@@ -38,7 +38,7 @@ public class ListCommand extends PlayerAsyncCommand
 
 		IPlayer player = parameters.getValue("player");
 		if (player == null)
-			return null;
+			return "&cUnable to locate player.";
 
 		List<String> plots = filter.apply(worldGuard.getOwnedRegions(player, filter.getWorld()));
 		List<String> property = manager.tag(executor, plots);

@@ -33,7 +33,7 @@ public class AddCommand extends PlayerAsyncCommand
 		IPlayer member = parameters.getValue("player");
 
 		if (member == null)
-			return null;
+			return "&cUnable to locate player.";
 
 		if (blacklistRepository.isBlacklisted(member))
 			return String.format("The player %s has been blacklisted from being added as a member.", member.getPrettyName());
