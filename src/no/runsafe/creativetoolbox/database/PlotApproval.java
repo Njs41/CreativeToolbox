@@ -34,7 +34,18 @@ public class PlotApproval
 		approvedBy = value;
 	}
 
+	public String getUniqueId()
+	{
+		return uuid;
+	}
+
+	public void setUniqueId(String value)
+	{
+		uuid = value;
+	}
+
 	private String name;
 	private DateTime approved;
 	private String approvedBy;
+	private String uuid;
 }

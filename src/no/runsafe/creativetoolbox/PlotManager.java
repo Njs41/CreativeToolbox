@@ -253,6 +253,18 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 		approval.setApproved(DateTime.now());
 		approval.setApprovedBy(approver);
 		approval.setName(plot);
+
+		if (approver.equals("Popular vote"))
+			approval.setUniqueId("none");
+		else
+		{
+			IPlayer plotApproverPlayer = server.getPlayer(approver);
+			if (plotApproverPlayer != null)
+				approval.setUniqueId(plotApproverPlayer.getUniqueId().toString());
+			else
+				approval.setUniqueId("none");
+		}
+
 		plotApproval.persist(approval);
 		approval = plotApproval.get(plot);
 		if (approval != null)

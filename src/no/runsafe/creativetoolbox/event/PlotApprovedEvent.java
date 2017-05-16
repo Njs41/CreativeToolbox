@@ -38,6 +38,7 @@ public class PlotApprovedEvent extends RunsafeCustomEvent
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("plot", approval.getName());
 		data.put("approved_by", approval.getApprovedBy());
+		data.put("approved_by_id", approval.getUniqueId());
 		data.put("owner", owner.getName());
 		data.put("approved_plots", String.valueOf(approvedPlots));
 		return data;
