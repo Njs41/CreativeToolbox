@@ -6,6 +6,7 @@ import no.runsafe.creativetoolbox.database.PlotLogRepository;
 import no.runsafe.creativetoolbox.database.PlotTagRepository;
 import no.runsafe.framework.api.IConfiguration;
 import no.runsafe.framework.api.ILocation;
+import no.runsafe.framework.api.IScheduler;
 import no.runsafe.framework.api.IServer;
 import no.runsafe.framework.api.block.IBlock;
 import no.runsafe.framework.api.event.IAsyncEvent;
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEntityEvent, IConfigurationChanged, IAsyncEvent
 {
 	public InteractEvents(
+		IScheduler scheduler,
 		PlotFilter plotFilter,
 		IRegionControl worldGuard,
 		PlotManager manager,
@@ -36,6 +38,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 		this.tagRepository = tagRepository;
 		this.logRepository = logRepository;
 		this.server = server;
+		this.scheduler = scheduler;
 	}
 
 	@Override
@@ -53,7 +56,10 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 
 		if (itemInHand != null && itemInHand.getItemId() == listItem)
 		{
+			if (stickTimer.containsKey(player))
+				return true;
 			this.listPlotsByLocation(block.getLocation(), player);
+			registerStickTimer(player);
 			return false;
 		}
 		return true;
@@ -62,13 +68,17 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	@Override
 	public void OnPlayerInteractEntityEvent(RunsafePlayerInteractEntityEvent event)
 	{
-		if (manager.isInWrongWorld(event.getPlayer()))
+		IPlayer player = event.getPlayer();
+		if (player == null || manager.isInWrongWorld(player))
 			return;
-		if (event.getRightClicked() instanceof IPlayer && event.getPlayer().hasPermission("runsafe.creative.list"))
+		if (event.getRightClicked() instanceof IPlayer && player.hasPermission("runsafe.creative.list"))
 		{
-			if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getItemId() == listItem)
+			if (player.getItemInHand() != null && player.getItemInHand().getItemId() == listItem)
 			{
-				this.listPlotsByPlayer((IPlayer) event.getRightClicked(), event.getPlayer());
+				if (stickTimer.containsKey(event.getPlayer()))
+					return;
+				this.listPlotsByPlayer((IPlayer) event.getRightClicked(), player);
+				registerStickTimer(player);
 				event.cancel();
 			}
 		}
@@ -83,6 +93,22 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	public void startPlotExtension(IPlayer player, String plot)
 	{
 		extensions.put(player.getName(), plot);
+	}
+
+	private void registerStickTimer(final IPlayer player)
+	{
+		if (stickTimer.containsKey(player))
+			scheduler.cancelTask(stickTimer.get(player));
+
+		stickTimer.put(player, scheduler.startSyncTask(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (stickTimer.containsKey(player))
+					stickTimer.remove(player);
+			}
+		}, 1));
 	}
 
 	private void listPlotsByPlayer(IPlayer checkPlayer, IPlayer triggerPlayer)
@@ -181,5 +207,7 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 	private final PlotTagRepository tagRepository;
 	private final PlotLogRepository logRepository;
 	private final IServer server;
+	private final IScheduler scheduler;
 	private final ConcurrentHashMap<String, String> extensions = new ConcurrentHashMap<String, String>();
+	private final ConcurrentHashMap<IPlayer, Integer> stickTimer = new ConcurrentHashMap<IPlayer, Integer>();
 }
