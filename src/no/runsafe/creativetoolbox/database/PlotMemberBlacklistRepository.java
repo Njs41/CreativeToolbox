@@ -1,6 +1,7 @@
 package no.runsafe.creativetoolbox.database;
 
 import no.runsafe.framework.api.IConfiguration;
+import no.runsafe.framework.api.IServer;
 import no.runsafe.framework.api.command.ICommandExecutor;
 import no.runsafe.framework.api.database.IDatabase;
 import no.runsafe.framework.api.database.ISchemaUpdate;
@@ -14,27 +15,31 @@ import java.util.List;
 
 public class PlotMemberBlacklistRepository extends Repository implements IConfigurationChanged
 {
+	public PlotMemberBlacklistRepository(IServer server)
+	{
+		this.server = server;
+	}
+
 	public void add(ICommandExecutor player, IPlayer blacklisted)
 	{
 		database.execute(
 			"INSERT INTO creative_blacklist (`player`,`by`,`time`) VALUES (?, ?, NOW())",
 			blacklisted.getName().toLowerCase(), player.getName()
 		);
-		blacklist.add(blacklisted.getName().toLowerCase());
+		blacklist.add(blacklisted);
 	}
 
 	public void remove(IPlayer blacklisted)
 	{
-		String playerName = blacklisted.getName().toLowerCase();
-		if (blacklist.contains(playerName))
-			blacklist.remove(playerName);
+		if (blacklist.contains(blacklisted))
+			blacklist.remove(blacklisted);
 
-		database.execute("DELETE FROM creative_blacklist WHERE `player`=?", playerName);
+		database.execute("DELETE FROM creative_blacklist WHERE `player`=?", blacklisted.getName());
 	}
 
 	public boolean isBlacklisted(IPlayer player)
 	{
-		return blacklist.contains(player.getName().toLowerCase());
+		return blacklist.contains(player);
 	}
 
 	public List<IPlayer> getBlacklist()
@@ -46,7 +51,9 @@ public class PlotMemberBlacklistRepository extends Repository implements IConfig
 	public void OnConfigurationChanged(IConfiguration iConfiguration)
 	{
 		blacklist.clear();
-		blacklist.addAll(database.queryStrings("SELECT `player` FROM creative_blacklist"));
+		List<String> blacklistNames = database.queryStrings("SELECT `player` FROM creative_blacklist");
+		for(String playerName : blacklistNames)
+			blacklist.add(server.getPlayer(playerName));
 	}
 
 	@Override
@@ -72,5 +79,6 @@ public class PlotMemberBlacklistRepository extends Repository implements IConfig
 		return update;
 	}
 
-	private final List<String> blacklist = new ArrayList<String>();
+	private final IServer server;
+	private final List<IPlayer> blacklist = new ArrayList<IPlayer>();
 }
