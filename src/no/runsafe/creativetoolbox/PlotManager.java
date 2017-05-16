@@ -257,10 +257,10 @@ public class PlotManager implements IConfigurationChanged, IServerReady, IPlayer
 		approval = plotApproval.get(plot);
 		if (approval != null)
 		{
-			for (String owner : worldGuard.getOwners(world, plot))
+			for (IPlayer owner : worldGuard.getOwnerPlayers(world, plot))
 			{
 				int approved = 0;
-				for (String region : worldGuard.getOwnedRegions(server.getOfflinePlayerExact(owner), world))
+				for (String region : worldGuard.getOwnedRegions(owner, world))
 					if (plotApproval.get(region) != null)
 						approved++;
 
