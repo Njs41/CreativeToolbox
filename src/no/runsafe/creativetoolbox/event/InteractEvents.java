@@ -176,13 +176,25 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 
 	private void listPlotMembers(IPlayer player, String regionName)
 	{
-		Set<String> owners = worldGuardInterface.getOwners(manager.getWorld(), regionName);
-		for (String owner : owners)
+		// Display owners that have been converted to UUIDs.
+		Set<IPlayer> owners = worldGuardInterface.getOwnerPlayers(manager.getWorld(), regionName);
+		for (IPlayer owner : owners)
+			listPlotMember(player, "&2Owner&r", owner.getName(), true);
+
+		// Display owners that haven't been converted to UUIDs yet.
+		Set<String> ownerNames = worldGuardInterface.getOwners(manager.getWorld(), regionName);
+		for (String owner : ownerNames)
 			listPlotMember(player, "&2Owner&r", owner, true);
 
-		Set<String> members = worldGuardInterface.getMembers(manager.getWorld(), regionName);
-		for (String member : members)
-			listPlotMember(player, "&3Member&r", member, false);
+		// Display members that have been converted to UUIDs.
+		Set<IPlayer> members = worldGuardInterface.getMemberPlayers(manager.getWorld(), regionName);
+		for (IPlayer member : members)
+			listPlotMember(player, "&3Member&r", member.getName(), false);
+
+		// Display owners that haven't been converted to UUIDs yet.
+		Set<String> memberNames = worldGuardInterface.getMembers(manager.getWorld(), regionName);
+		for (String member : memberNames)
+			listPlotMember(player, "&2Owner&r", member, false);
 	}
 
 	private void listPlotMember(IPlayer player, String label, String member, boolean showSeen)
@@ -197,6 +209,13 @@ public class InteractEvents implements IPlayerRightClickBlock, IPlayerInteractEn
 				String seen = plotMember.getLastSeen(player);
 				player.sendColouredMessage("     %s&r", (seen == null ? "Player never seen" : seen));
 			}
+		}
+		else
+		{
+			if (member != null && !member.isEmpty())
+				player.sendColouredMessage("   %s: %s", label, member);
+			else
+				player.sendColouredMessage("   %s: %s", label, "Invalid Player");
 		}
 	}
 
